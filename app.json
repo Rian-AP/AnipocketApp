@@ -1,0 +1,66 @@
+{
+  "expo": {
+    "name": "Anipocket",
+    "slug": "mobile",
+    "owner": "austinpaw",
+    "extra": {
+      "eas": {
+        "projectId": "ec3c89f5-2039-4a14-a1fc-22dd28714285"
+      }
+    },
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "scheme": "mobile",
+    "userInterfaceStyle": "automatic",
+    "ios": {
+      "icon": "./assets/Anipocket-ios.icon",
+      "supportsTablet": true,
+      "bundleIdentifier": "com.austinpaw.mobile",
+      "infoPlist": {
+        "UIDesignRequiresCompatibility": false,
+        "ITSAppUsesNonExemptEncryption": false
+      }
+    },
+    "android": {
+      "package": "com.austinpaw.mobile",
+      "adaptiveIcon": {
+        "backgroundColor": "#E84140",
+        "foregroundImage": "./assets/images/anipocket-android-foreground.png",
+        "monochromeImage": "./assets/images/anipocket-android-foreground.png"
+      },
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "static",
+      "favicon": "./assets/images/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-video",
+        {
+          "supportsPictureInPicture": true
+        }
+      ],
+      "expo-web-browser",
+      "expo-image",
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#ffffff",
+          "image": "./assets/icon.png",
+          "imageWidth": 160,
+          "dark": {
+            "backgroundColor": "#050506",
+            "image": "./assets/iconb.png"
+          }
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}

@@ -1,0 +1,63 @@
+diff --git a/node_modules/expo-video/ios/VideoView.swift b/node_modules/expo-video/ios/VideoView.swift
+index 3f285fb..f34367c 100644
+--- a/node_modules/expo-video/ios/VideoView.swift
++++ b/node_modules/expo-video/ios/VideoView.swift
+@@ -22,7 +22,11 @@ public final class VideoView: ExpoView, AVPlayerViewControllerDelegate {
+       playerViewController.canStartPictureInPictureAutomaticallyFromInline = startPictureInPictureAutomatically
+     }
+   }
++  var isFullscreen: Bool = false
+   #endif
++  // Tracks whether the player was fullscreen when PiP started, so PiP can return
++  // straight to fullscreen on stop (see the restore-UI delegate below).
++  var wasFullscreenBeforePip: Bool = false
+ 
+   var allowPictureInPicture: Bool = false {
+     didSet {
+@@ -131,6 +135,7 @@ public final class VideoView: ExpoView, AVPlayerViewControllerDelegate {
+     _ playerViewController: AVPlayerViewController,
+     willBeginFullScreenPresentationWithAnimationCoordinator coordinator: UIViewControllerTransitionCoordinator
+   ) {
++    isFullscreen = true
+     onFullscreenEnter()
+   }
+ 
+@@ -150,12 +155,18 @@ public final class VideoView: ExpoView, AVPlayerViewControllerDelegate {
+       }
+ 
+       if !context.isCancelled {
++        self.isFullscreen = false
+         self.onFullscreenExit()
+       }
+     }
+   }
+   #endif
+ 
++  public func playerViewControllerWillStartPictureInPicture(_ playerViewController: AVPlayerViewController) {
++    // Capture fullscreen state before PiP tears down the fullscreen presentation.
++    wasFullscreenBeforePip = isFullscreen
++  }
++
+   public func playerViewControllerDidStartPictureInPicture(_ playerViewController: AVPlayerViewController) {
+     onPictureInPictureStart()
+   }
+@@ -164,6 +175,19 @@ public final class VideoView: ExpoView, AVPlayerViewControllerDelegate {
+     onPictureInPictureStop()
+   }
+ 
++  public func playerViewController(
++    _ playerViewController: AVPlayerViewController,
++    restoreUserInterfaceForPictureInPictureStopWithCompletionHandler completionHandler: @escaping (Bool) -> Void
++  ) {
++    // If PiP was started from fullscreen, re-enter fullscreen during PiP teardown so
++    // the player returns straight to fullscreen instead of flashing the inline view.
++    if wasFullscreenBeforePip {
++      wasFullscreenBeforePip = false
++      enterFullscreen()
++    }
++    completionHandler(true)
++  }
++
+   public override func didMoveToWindow() {
+     // TV is doing a normal view controller present, so we should not execute
+     // this code
